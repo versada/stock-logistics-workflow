@@ -2,3 +2,4 @@
 * Sergio Teruel <sergio.teruel@tecnativa.com>
 * Pimolnat Suntian <pimolnats@ecosoft.co.th>
 * Denis Roussel <denis.roussel@acsone.eu>
+* Maciej Wichowski <maciej@versada.eu>
