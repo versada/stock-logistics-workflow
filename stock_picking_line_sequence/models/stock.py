@@ -23,7 +23,7 @@ class StockMove(models.Model):
 
     @api.model
     def create(self, values):
-        move = super(StockMove, self).create(values)
+        move = super().create(values)
         # We do not reset the sequence if we are copying a complete picking
         # or creating a backorder
         if not self.env.context.get("keep_line_sequence", False):
@@ -35,9 +35,7 @@ class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     def _get_aggregated_product_quantities(self, **kwargs):
-        aggregated_move_lines = super(
-            StockMoveLine, self
-        )._get_aggregated_product_quantities(**kwargs)
+        aggregated_move_lines = super()._get_aggregated_product_quantities(**kwargs)
         for move_line in self:
             line_key = self._get_aggregated_properties(move_line=move_line)["line_key"]
             sequence2 = move_line.move_id.sequence2

@@ -8,7 +8,7 @@ from odoo.tests import common
 
 class TestStockMove(common.TransactionCase):
     def setUp(self):
-        super(TestStockMove, self).setUp()
+        super().setUp()
         # Useful models
         self.Picking = self.env["stock.picking"]
         self.product_id_1 = self.env.ref("product.product_product_8")
@@ -68,7 +68,6 @@ class TestStockMove(common.TransactionCase):
         return picking
 
     def test_move_lines_sequence(self):
-
         self.picking = self._create_picking()
         self.picking._compute_max_line_sequence()
         self.picking.move_ids.write({"product_uom_qty": 10.0})
