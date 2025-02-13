@@ -2,6 +2,7 @@
 # Copyright 2017 Eficent Business and IT Consulting Services S.L.
 # Copyright 2017 Serpent Consulting Services Pvt. Ltd.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
+from lxml import etree
 
 from odoo import api, fields, models
 
@@ -69,7 +70,8 @@ class StockPicking(models.Model):
         for rec in self:
             current_sequence = 1
             for line in rec.move_ids_without_package:
-                # Check if the record ID is an integer (real ID) or a string (virtual ID)
+                # Check if the record ID is an integer (real ID)
+                # or a NewId (virtual ID)
                 if isinstance(line.id, int):
                     line.sequence = current_sequence
                     current_sequence += 1
@@ -83,3 +85,25 @@ class StockPicking(models.Model):
         return super(
             StockPicking, self.with_context(keep_line_sequence=True)
         ).button_validate()
+
+    @api.model
+    def get_view(self, view_id=None, view_type="form", **options):
+        """Append the default sequence.
+        The context of `move_ids_without_package` is already overloaded
+        and replacing it in a view does not scale across other extension
+        modules.
+        """
+        res = super().get_view(view_id=view_id, view_type=view_type, **options)
+
+        if res.get("arch") and view_type == "form":
+            doc = etree.XML(res["arch"])
+            elements = doc.xpath("//field[@name='move_ids_without_package']")
+            if elements:
+                element = elements[0]
+                context = element.get("context", "{}")
+                context = "{}{}, {}".format(
+                    context[0], "'default_sequence': max_line_sequence", context[1:]
+                )
+                element.set("context", context)
+            res["arch"] = etree.tostring(doc, encoding="unicode")
+        return res
